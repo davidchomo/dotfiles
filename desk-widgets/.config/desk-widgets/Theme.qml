@@ -27,11 +27,15 @@ Singleton {
     readonly property int radius: 26
     readonly property int pad: 22
 
-    // Display + monitor everything is placed on
-    readonly property string screenName: "HDMI-A-1"
+    // Monitor the widgets go to: $DESK_WIDGETS_SCREEN if set (e.g. "HDMI-A-1"), otherwise the
+    // first external monitor (not a laptop panel eDP-*/LVDS-*), otherwise the first screen.
+    readonly property string screenName: Quickshell.env("DESK_WIDGETS_SCREEN") ?? ""
     readonly property var screen: {
-        for (const s of Quickshell.screens) if (s.name === screenName) return s;
-        return null;
+        const all = Quickshell.screens;
+        if (screenName !== "")
+            for (const s of all) if (s.name === screenName) return s;
+        for (const s of all) if (!/^(eDP|LVDS|DSI)/.test(s.name)) return s;
+        return all.length > 0 ? all[0] : null;
     }
 
     FileView {

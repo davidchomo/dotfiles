@@ -3,6 +3,12 @@
 #  Disable: sudo systemctl disable --now ryzenadj-tune.timer
 # Remove completely:              sudo sh ~/.config/ryzenadj-tune/install.sh uninstall
 set -e
+# Power limits / temperature cap are tuned for ASUS ROG Zephyrus G14 GA401Q* (Ryzen 7 5800HS).
+# Other machines need their own values – refuse unless FORCE=1.
+if [ "${1:-}" != uninstall ] && ! grep -q "GA401Q" /sys/class/dmi/id/product_name 2>/dev/null && [ "${FORCE:-0}" != 1 ]; then
+    echo "ryzenadj-tune is tuned for ASUS G14 GA401Q only (this is: $(cat /sys/class/dmi/id/product_name 2>/dev/null)). Not installing."
+    exit 1
+fi
 D="$(dirname "$(readlink -f "$0")")"
 if [ "${1:-}" = uninstall ]; then
     systemctl disable --now ryzenadj-tune.timer 2>/dev/null || true

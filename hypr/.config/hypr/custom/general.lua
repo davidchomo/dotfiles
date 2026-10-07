@@ -1,8 +1,4 @@
--- Monitors
-hl.monitor({ output = "eDP-1",    mode = "2560x1440@120", position = "0x0",    scale = 1.6 })
-hl.monitor({ output = "HDMI-A-1", mode = "2560x1440@144", position = "1600x0", scale = 1 })
-
--- Keyboard + touchpad
+-- Keyboard + touchpad (portable). Monitors and per-device settings live in local.lua.
 hl.config({
     input = {
         kb_layout = "sk,us",
@@ -14,5 +10,7 @@ hl.config({
     },
 })
 
--- External mouse without acceleration (touchpad keeps libinput's adaptive profile)
-hl.device({ name = "logitech-g102-lightsync-gaming-mouse", accel_profile = "flat" })
+-- machine-specific overrides (monitors, mice …), not in git
+if is_file_exists(HOME .. "/.config/hypr/custom/local.lua") then
+    require("custom.local")
+end

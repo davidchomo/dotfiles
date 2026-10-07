@@ -1,4 +1,4 @@
-// Desktop widgets for HDMI-A-1 (Samsung 27"), run with: qs -p ~/.config/desk-widgets
+// Desktop widgets on the first external monitor (or $DESK_WIDGETS_SCREEN), run with: qs -p ~/.config/desk-widgets
 // Kept outside ~/.config/quickshell because end-4's installer rsyncs that dir with --delete.
 //
 // Layout: two columns on the screen edges, rows of equal height in both, middle stays free.

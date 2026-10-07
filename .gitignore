@@ -4,3 +4,5 @@ claude-bridge/.config/claude-bridge/token
 # caches
 __pycache__/
 *.pyc
+# machine-specific Hyprland settings (monitors, mice) – see local.lua.example
+hypr/.config/hypr/custom/local.lua

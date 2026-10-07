@@ -1,22 +1,22 @@
-# dotfiles – G14 (GA401QC) · CachyOS · Hyprland (Lua) + end-4
+# dotfiles – CachyOS · Hyprland (Lua) + end-4 add-ons
 
-Stow layout: each directory is a package mirroring `$HOME`. Currently linked by hand
-(whole directories / single files are symlinks into this repo). On a new system:
-`sudo pacman -S stow && cd ~/dotfiles && stow -t ~ hypr uwsm desk-widgets claude-bridge kitty fish gamemode mangohud brave steam bin`
+**Install: see [INSTALL.md](INSTALL.md) (`./install.sh`).** Made on an ASUS G14 GA401QC; machine-specific bits are detected or kept in untracked files.
+
+Stow-compatible layout: each directory is a package mirroring `$HOME`; `install.sh` links them (or use `stow`).
 
 | package | what |
 |---|---|
-| `hypr` | `~/.config/hypr/custom/` – my overrides on top of end-4 (GPU env, monitors, sk/us + Alt+Shift, touchpad, rules, keybinds, Super+F1 shortcut panel) |
-| `uwsm` | `env-hyprland` – AMD-only `AQ_DRM_DEVICES`, Mesa-only EGL (lets the NVIDIA dGPU sleep) |
-| `desk-widgets` | Quickshell desktop widgets on HDMI-A-1 (`qs -p ~/.config/desk-widgets`): clock, Google Calendar (iCal), photos from Pixel (KDE Connect), Spotify, system |
+| `hypr` | `~/.config/hypr/custom/` – overrides on top of end-4 (sk/us + Alt+Shift, touchpad, rules, keybinds, Super+F1 panel); hybrid-GPU env only if `~/.config/hypr/gpu-amd` exists; monitors/mice in untracked `local.lua` |
+| `uwsm` | `env-hyprland` – on hybrid AMD+NVIDIA laptops: AMD-only `AQ_DRM_DEVICES`, Mesa-only EGL (lets the dGPU sleep) |
+| `desk-widgets` | Quickshell desktop widgets on the first external monitor or `$DESK_WIDGETS_SCREEN` (`qs -p ~/.config/desk-widgets`): clock, Google Calendar (iCal), photos from Pixel (KDE Connect), Spotify, system |
 | `claude-bridge` | local OpenAI-compatible bridge end-4 sidebar → Claude Code (`claude -p`), user service; end-4 chat look patch (`end4-patch/apply.sh` after end-4 updates) |
 | `kitty`, `fish` | terminal (my originals, not end-4's) |
 | `gamemode` | gamemode switches power profile to performance while a game runs |
 | `mangohud` | in-game overlay (FPS, frametime, CPU/GPU temp+load, VRAM); Shift_R+F12 toggles, Shift_L+F2 logs to ~/benchmarks/mangohud |
 | `brave` | `brave-flags.conf` – VA-API hardware video decode on the AMD iGPU (Wayland) |
-| `steam` | `steam` launcher + `steam-launch-options`: after Steam exits (systemd path unit watching localconfig.vdf) and before Steam starts, every installed game gets `nvidia-run gamemoderun mangohud %command%` (Steam has no global launch options); desktop entry override |
+| `steam` | `steam-launch-options` + `steam-launch-options@<account>.path`: after Steam exits, every game without custom options gets `$HOME/.local/bin/nvidia-run gamemoderun mangohud %command%` |
 | `bin` | `nvidia-run` – run an app on the NVIDIA dGPU (PRIME offload, EGL allowed) |
-| `tuning` | `cpu-boost`, `ryzenadj-tune` – **NOT installed** (system-level; ryzenadj at early boot broke the greeter on 2026-10-07, see notes) |
+| `tuning` | `cpu-boost` (boost toggle, any CPU with `cpufreq/boost`), `ryzenadj-tune` (ASUS G14 GA401Q only – installer refuses elsewhere); both need sudo |
 
 ## Not in git (secrets – recreate by hand)
 - `~/.config/desk-widgets/secrets/ical-url` – Google Calendar secret iCal address (chmod 600)
@@ -30,5 +30,5 @@ Stow layout: each directory is a package mirroring `$HOME`. Currently linked by 
 
 ## Notes
 - Curve Optimizer (real undervolt) is rejected by this G14's SMU; temperature cap via ryzenadj worked but must
-  never run during early boot. Benchmarks and plan: `~/benchmarks/`.
+  start well after boot (timer: 3 min). Boot failures on 2026-10-07 were a greetd/plymouth race, fixed by `system/` greetd drop-in.
 - System-level settings outside this repo: `asusctl battery limit 80`, `asusctl profile set --ac Balanced --battery Quiet`.
