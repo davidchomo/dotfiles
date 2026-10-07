@@ -7,6 +7,38 @@ Samotný vzhľad (bar, panely, farby z tapety) je z end-4.
 > ⚠️ Pred inštaláciou si sprav zálohu: `cp -r ~/.config ~/.config.bak-$(date +%F)`
 > a ak máš btrfs + snapper aj snapshot: `sudo snapper -c root create -d "pred rice"`.
 
+## Rýchlo – všetky príkazy za sebou
+Na čerstvom CachyOS s Hyprlandom, v termináli, jeden blok po druhom (podrobnosti nižšie):
+```fish
+# 0. záloha + aktualizácia
+cp -r ~/.config ~/.config.bak-(date +%F)
+sudo pacman -Syu
+
+# 1. balíky
+sudo pacman -S --needed git jq uv python mangohud gamemode lib32-gamemode playerctl brightnessctl
+sudo pacman -S --needed kdeconnect sshfs steam      # voliteľné
+
+# 2. end-4 (na otázky y; pri konflikte adw-gtk-theme pozri bod 2 nižšie)
+git clone https://github.com/end-4/dots-hyprland ~/.cache/dots-hyprland
+cd ~/.cache/dots-hyprland
+./setup install --skip-sysupdate --skip-plasmaintg
+
+# 3. Claude Code (voliteľné, pre AI panel) – potom zatvor a otvor terminál
+curl -fsSL https://claude.ai/install.sh | bash
+claude                                              # prihlásenie, potom /exit
+
+# 4. tieto dotfiles
+git clone https://github.com/davidchomo/dotfiles ~/dotfiles
+cd ~/dotfiles
+./install.sh --check
+./install.sh
+
+# 5. monitory: názvy zistíš cez hyprctl monitors, nastavíš v local.lua
+hyprctl monitors
+nano ~/.config/hypr/custom/local.lua
+```
+Potom sa **odhlás a prihlás**. Nastavenia rice: **Ctrl+Super+I**, skratky: **Super+F1**.
+
 ## 1. Predpoklady
 - Arch / **CachyOS**, Hyprland **≥ 0.55 s Lua configom** (`~/.config/hypr/hyprland.lua`).
 - Balíky:
@@ -28,7 +60,7 @@ cd ~/.cache/dots-hyprland
 
 ## 3. Tieto dotfiles
 ```fish
-git clone <adresa-repozitára> ~/dotfiles
+git clone https://github.com/davidchomo/dotfiles ~/dotfiles
 cd ~/dotfiles
 ./install.sh --check      # iba kontrola, nič nemení
 ./install.sh              # nainštaluje (existujúce súbory zálohuje ako *.bak-<dátum>)
