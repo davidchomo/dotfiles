@@ -1,0 +1,9 @@
+#!/bin/sh
+# Steam launcher: before Steam starts (and only if it isn't running yet), give every installed
+# game the launch options "nvidia-run gamemoderun mangohud %command%" (steam-launch-options),
+# then start the real Steam. Used by ~/.local/share/applications/steam.desktop and by `steam`
+# in a terminal (~/.local/bin is first in PATH).
+if ! pgrep -x steam >/dev/null 2>&1; then
+    "$HOME/.local/bin/steam-launch-options" --quiet
+fi
+exec /usr/bin/steam "$@"
