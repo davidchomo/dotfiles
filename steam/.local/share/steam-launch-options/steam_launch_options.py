@@ -29,6 +29,15 @@ def say(msg):
         print(msg)
 
 
+# switched off in the settings app (~/.config/rice/settings.json -> games.steamOptions)?
+try:
+    import json
+    if json.loads((pathlib.Path.home() / ".config/rice/settings.json").read_text()).get("games", {}).get("steamOptions", True) is False:
+        say("vypnuté v nastaveniach (Hry → Steam voľby)")
+        sys.exit(0)
+except (OSError, ValueError):
+    pass
+
 if subprocess.run(["pgrep", "-x", "steam"], capture_output=True).returncode == 0:
     say("Steam beží – zavri ho (Steam → Exit), inak by zmeny pri ukončení prepísal.")
     sys.exit(1)

@@ -20,3 +20,6 @@ hl.layer_rule({
     ignore_alpha = 0.3,
     order        = -10, -- lower = drawn above; end-4 wallpaper layer has order 0
 })
+
+-- Settings app for the rice add-ons (qs -p ~/.config/desk-widgets/settings.qml)
+hl.window_rule({ match = { title = "^(Nastavenia rice)$" }, float = true, center = true, size = { "920", "680" } })

@@ -11,9 +11,10 @@ PanelWindow {
     default property alias content: holder.data
     property int contentWidth: 400
     property int contentHeight: 200
+    property bool shown: true        // from RiceSettings (settings app)
 
     screen: Theme.screen
-    visible: Theme.screen !== null
+    visible: Theme.screen !== null && shown
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Bottom

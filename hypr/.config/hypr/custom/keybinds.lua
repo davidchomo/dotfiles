@@ -19,3 +19,7 @@ hl.bind("SUPER + F1", hl.dsp.exec_cmd("~/.config/hypr/custom/scripts/helper.sh")
 -- CPU turbo boost on/off (/usr/local/bin/cpu-boost, passwordless via /etc/sudoers.d/91-cpu-boost)
 hl.bind("SUPER + ALT + B", hl.dsp.exec_cmd("~/.config/hypr/custom/scripts/boost-toggle.sh"),
     { description = "System: Toggle CPU boost" })
+
+-- Settings app for the rice add-ons (widgets, Claude Code sidebar, games, system)
+hl.bind("CTRL + SUPER + I", hl.dsp.exec_cmd("qs -p ~/.config/desk-widgets/settings.qml"),
+    { description = "App: Rice settings (widgets, Claude Code, games)" })

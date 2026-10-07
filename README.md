@@ -7,6 +7,7 @@ Stow-compatible layout: each directory is a package mirroring `$HOME`; `install.
 | package | what |
 |---|---|
 | `hypr` | `~/.config/hypr/custom/` – overrides on top of end-4 (sk/us + Alt+Shift, touchpad, rules, keybinds, Super+F1 panel); hybrid-GPU env only if `~/.config/hypr/gpu-amd` exists; monitors/mice in untracked `local.lua` |
+| `desk-widgets` (settings) | `settings.qml` – the „Nastavenia rice“ app (Ctrl+Super+I): widgets, Claude Code, games, system; stored in `~/.config/rice/settings.json` |
 | `uwsm` | `env-hyprland` – on hybrid AMD+NVIDIA laptops: AMD-only `AQ_DRM_DEVICES`, Mesa-only EGL (lets the dGPU sleep) |
 | `desk-widgets` | Quickshell desktop widgets on the first external monitor or `$DESK_WIDGETS_SCREEN` (`qs -p ~/.config/desk-widgets`): clock, Google Calendar (iCal), photos from Pixel (KDE Connect), Spotify, system |
 | `claude-bridge` | local OpenAI-compatible bridge end-4 sidebar → Claude Code (`claude -p`), user service; end-4 chat look patch (`end4-patch/apply.sh` after end-4 updates) |

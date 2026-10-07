@@ -6,6 +6,7 @@ several calendars allowed). The last successful download is cached so the widget
 offline. Run with the desk-widgets venv (icalendar + recurring-ical-events).
 """
 import datetime as dt
+import sys
 import json
 import pathlib
 import urllib.request
@@ -17,6 +18,8 @@ HOME = pathlib.Path.home()
 URL_FILE = HOME / ".config/desk-widgets/secrets/ical-url"
 CACHE_DIR = HOME / ".cache/desk-widgets"
 DAYS_AHEAD = 60
+if "--days" in sys.argv:  # set from the settings app (RiceSettings.widgets.calendarDays)
+    DAYS_AHEAD = max(1, int(sys.argv[sys.argv.index("--days") + 1]))
 MAX_EVENTS = 8
 
 

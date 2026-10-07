@@ -29,7 +29,8 @@ Singleton {
 
     // Monitor the widgets go to: $DESK_WIDGETS_SCREEN if set (e.g. "HDMI-A-1"), otherwise the
     // first external monitor (not a laptop panel eDP-*/LVDS-*), otherwise the first screen.
-    readonly property string screenName: Quickshell.env("DESK_WIDGETS_SCREEN") ?? ""
+    readonly property string screenName: RiceSettings.widgets.screen !== "" ? RiceSettings.widgets.screen
+                                                                           : (Quickshell.env("DESK_WIDGETS_SCREEN") ?? "")
     readonly property var screen: {
         const all = Quickshell.screens;
         if (screenName !== "")

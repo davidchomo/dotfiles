@@ -12,7 +12,7 @@ DeskWindow {
     contentHeight: 600
 
     readonly property string folder: Quickshell.env("HOME") + "/Pictures/Desk"
-    property int interval: 25000
+    property int interval: Math.max(5, RiceSettings.widgets.photoInterval) * 1000
     property bool showingA: true
 
     FolderListModel {

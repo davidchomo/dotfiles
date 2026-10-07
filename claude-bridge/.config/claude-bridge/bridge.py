@@ -28,12 +28,34 @@ HOME = pathlib.Path.home()
 TOKEN = (HOME / ".config/claude-bridge/token").read_text().strip()
 STATE = HOME / ".local/state/claude-bridge/session.json"
 CLAUDE = os.environ.get("CLAUDE_BIN", str(HOME / ".local/bin/claude"))
-APPEND_PROMPT = (
-    "You are running inside the desktop sidebar chat (end-4 / Quickshell on Hyprland) on the "
-    "user's own laptop (CachyOS). Answer in Slovak unless asked otherwise, keep answers short and "
-    "use Markdown. You have no sudo password: when something needs sudo, give the user the exact "
-    "command and explain it instead of trying to run it."
-)
+SETTINGS = HOME / ".config/rice/settings.json"   # written by the settings app (RiceSettings.qml)
+CLAUDE_DEFAULTS = {"enabled": True, "model": "", "permissions": "all", "language": "sk",
+                   "style": "short", "workdir": "~"}
+WRITE_TOOLS = "Bash Edit Write MultiEdit NotebookEdit"
+
+
+def claude_settings():
+    """Current Claude section of the settings file (re-read on every request)."""
+    d = dict(CLAUDE_DEFAULTS)
+    try:
+        d.update(json.loads(SETTINGS.read_text()).get("claude", {}))
+    except (OSError, ValueError):
+        pass
+    return d
+
+
+def append_prompt(cfg):
+    lang = "English" if cfg.get("language") == "en" else "Slovak"
+    style = ("Give thorough, detailed answers with explanations."
+             if cfg.get("style") == "detailed" else "Keep answers short.")
+    perm = {"all": "", "edit": " You may read and edit files but cannot run shell commands.",
+            "read": " You are read-only: you can read files and search the web but not change anything."}
+    return ("You are running inside the desktop sidebar chat (end-4 / Quickshell on Hyprland) on the "
+            f"user's own computer (CachyOS). Answer in {lang} unless asked otherwise. {style} Use Markdown. "
+            "You have no sudo password: when something needs sudo, give the user the exact command and "
+            "explain it instead of trying to run it." + perm.get(cfg.get("permissions"), ""))
+
+
 lock = threading.Lock()  # one Claude Code run at a time
 
 
@@ -140,6 +162,9 @@ class Handler(BaseHTTPRequestHandler):
         prompt = text_of(users[-1].get("content"))
         resume = load_session() if len(users) > 1 else None
 
+        if not claude_settings().get("enabled", True):
+            return self.deny(503, "Claude Code je v nastaveniach vypnutý")
+
         if not lock.acquire(blocking=False):
             return self.deny(429, "Claude Code ešte pracuje na predošlej požiadavke")
         try:
@@ -148,12 +173,25 @@ class Handler(BaseHTTPRequestHandler):
             lock.release()
 
     def run_claude(self, prompt, resume):
+        cfg = claude_settings()
         cmd = [CLAUDE, "-p", "--output-format", "stream-json", "--verbose",
-               "--include-partial-messages", "--dangerously-skip-permissions",
+               "--include-partial-messages",
                # no MCP servers/claude.ai connectors: they can't authenticate headless and
                # only add noise to answers
                "--strict-mcp-config",
-               "--append-system-prompt", APPEND_PROMPT]
+               "--append-system-prompt", append_prompt(cfg)]
+        perms = cfg.get("permissions", "all")
+        if perms == "all":
+            cmd += ["--dangerously-skip-permissions"]
+        elif perms == "edit":
+            cmd += ["--permission-mode", "acceptEdits", "--disallowedTools", "Bash"]
+        else:  # read: headless runs deny anything that would need approval; block writes explicitly
+            cmd += ["--disallowedTools", WRITE_TOOLS]
+        if cfg.get("model"):
+            cmd += ["--model", cfg["model"]]
+        workdir = pathlib.Path(os.path.expanduser(cfg.get("workdir") or "~"))
+        if not workdir.is_dir():
+            workdir = HOME
         if resume:
             cmd += ["--resume", resume]
 
@@ -163,7 +201,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Transfer-Encoding", "chunked")
         self.end_headers()
 
-        proc = subprocess.Popen(cmd, cwd=HOME, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        proc = subprocess.Popen(cmd, cwd=workdir, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, text=True, start_new_session=True)
         proc.stdin.write(prompt)
         proc.stdin.close()

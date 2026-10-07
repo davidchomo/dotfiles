@@ -53,7 +53,7 @@ link() {  # link <package> <path relative to $HOME>
 declare -A LINKS=(
     [hypr]=".config/hypr/custom"
     [uwsm]=".config/uwsm/env-hyprland"
-    [desk-widgets]=".config/desk-widgets"
+    [desk-widgets]=".config/desk-widgets .local/share/applications/rice-settings.desktop"
     [claude-bridge]=".config/claude-bridge .config/systemd/user/claude-bridge.service"
     [gamemode]=".config/gamemode.ini .config/gamemode"
     [mangohud]=".config/MangoHud"
@@ -133,7 +133,7 @@ ${c_ok}Done.${c_off} Next steps (see INSTALL.md):
   1. Edit ~/.config/hypr/custom/local.lua (monitors) and log out / in.
   2. Optional, system-level (sudo):
      - greetd login race fix:  sudo install -Dm644 $DOT/system/etc/systemd/system/greetd.service.d/10-wait-for-gpu.conf /etc/systemd/system/greetd.service.d/10-wait-for-gpu.conf
-     - CPU boost toggle (Super+Alt+B):  sudo sh ~/.config/cpu-boost/install.sh && sudo systemctl disable cpu-boost.service
+     - CPU boost toggle (Super+Alt+B):  sudo sh ~/.config/cpu-boost/install.sh
      - ryzenadj-tune: ONLY on ASUS G14 GA401Q (refuses elsewhere)
   3. Calendar widget: put your Google Calendar secret iCal URL into ~/.config/desk-widgets/secrets/ical-url
 EOF

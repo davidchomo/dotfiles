@@ -13,7 +13,8 @@
   Super+X          textový editor
   Super+E          súbory (Dolphin)
   Super+C          editor kódu
-  Super+I          nastavenia
+  Super+I          nastavenia end-4
+  Ctrl+Super+I     nastavenia rice
   Ctrl+Super+V     hlasitosť (mixér)
   Ctrl+Shift+Esc   správca úloh
   Super+Alt+B      CPU boost zap/vyp

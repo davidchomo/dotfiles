@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Nastavenia rice
+GenericName=Rice settings
+Comment=Widgety, Claude Code v paneli, hry a systém
+Exec=sh -c "exec qs -p \\$HOME/.config/desk-widgets/settings.qml"
+Icon=preferences-desktop
+Categories=Settings;
+Keywords=rice;widgets;claude;mangohud;boost;nastavenia;

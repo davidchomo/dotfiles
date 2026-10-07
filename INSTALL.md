@@ -48,12 +48,15 @@ Potom sa **odhlás a prihlás**.
 | Čo | Príkaz |
 |---|---|
 | Oprava „prihlasovacia obrazovka sa niekedy neukáže“ (greetd) | `sudo install -Dm644 ~/dotfiles/system/etc/systemd/system/greetd.service.d/10-wait-for-gpu.conf /etc/systemd/system/greetd.service.d/10-wait-for-gpu.conf` |
-| Prepínač CPU boostu (Super+Alt+B) | `sudo sh ~/.config/cpu-boost/install.sh && sudo systemctl disable cpu-boost.service` |
+| Prepínač CPU boostu (Super+Alt+B, platí do reštartu) | `sudo sh ~/.config/cpu-boost/install.sh` |
 | `ryzenadj-tune` (limity CPU) | **iba ASUS G14 GA401Q** – na inom PC sa odmietne nainštalovať |
 
 ## 6. Funkcie
 - **Super+F1** – panel s najdôležitejšími skratkami, **Super+/** – všetky skratky end-4.
-- **Widgety** na externom monitore (iný monitor: premenná `DESK_WIDGETS_SCREEN`, napr. `HDMI-A-1`):
+- **Ctrl+Super+I** (alebo v spúšťači „Nastavenia rice“) – nastavenia bez kódu: ktoré widgety a na ktorom
+  monitore, Claude Code (model, práva, jazyk, priečinok), FPS limit, Steam voľby, boost, profil napájania.
+  Ukladá sa do `~/.config/rice/settings.json`.
+- **Widgety** na externom monitore (monitor sa dá zvoliť v nastaveniach):
   - kalendár: tajnú iCal adresu z Google Calendar (Nastavenia → kalendár → *Tajná adresa vo formáte iCal*)
     vlož do `~/.config/desk-widgets/secrets/ical-url`,
   - fotky: `~/Pictures/Desk` (alebo z mobilu cez KDE Connect, tlačidlo ↻ vo widgete),

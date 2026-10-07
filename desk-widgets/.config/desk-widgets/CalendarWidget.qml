@@ -9,7 +9,9 @@ DeskWindow {
     contentWidth: 460
     contentHeight: 520
 
-    property int maxItems: 4
+    property int maxItems: Math.max(1, RiceSettings.widgets.calendarItems)
+    readonly property int days: Math.max(1, RiceSettings.widgets.calendarDays)
+    onDaysChanged: if (!fetch.running) fetch.running = true
     // card height follows the number of events shown (header + rows), see shell.qml
     readonly property int shownCount: Math.max(1, Math.min(maxItems, events.length))
     readonly property int naturalHeight: Theme.pad * 2 + 44 + shownCount * 76 + (shownCount - 1) * 12
@@ -21,7 +23,7 @@ DeskWindow {
 
     Process {
         id: fetch
-        command: [root.python, "-I", root.script]
+        command: [root.python, "-I", root.script, "--days", String(root.days)]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {

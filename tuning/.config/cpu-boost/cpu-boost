@@ -1,19 +1,28 @@
 #!/bin/sh
-# cpu-boost on|off|toggle|status|apply — CPU turbo boost switch (Ryzen, amd-pstate-epp).
-# The choice is remembered in /var/lib/cpu-boost/state and re-applied at boot by cpu-boost.service.
-# Installed as /usr/local/bin/cpu-boost; the user may run it via sudo without password
-# (/etc/sudoers.d/91-cpu-boost) so a keybind can toggle it.
+# cpu-boost on|off|toggle|status|apply — CPU turbo boost switch that cooperates with
+# power-profiles-daemon (which sets the per-core cpufreq/policy*/boost itself on every profile
+# change: power-saver -> 0, balanced/performance -> 1).
+#   off    : per-core boost off, remembered in /run/cpu-boost/state until reboot
+#   on     : boost back on and back under power-profiles-daemon control
+#   apply  : re-apply a manual "off" (cpu-boost.timer, every 15 s, after profile changes)
+# The global cpufreq/boost switch is left at 1: with it at 0 the kernel rejects ppd's per-core
+# writes and profile switching breaks.
 set -e
-F=/sys/devices/system/cpu/cpufreq/boost
-S=/var/lib/cpu-boost/state
+G=/sys/devices/system/cpu/cpufreq/boost
+RUN=/run/cpu-boost/state
+cur() { cat /sys/devices/system/cpu/cpufreq/policy0/boost 2>/dev/null || cat "$G"; }
+set_all() {
+    if [ -w "$G" ] && [ "$(cat "$G")" = 0 ]; then echo 1 > "$G"; fi
+    for f in /sys/devices/system/cpu/cpufreq/policy*/boost; do
+        [ -w "$f" ] && echo "$1" > "$f"
+    done
+    [ -e /sys/devices/system/cpu/cpufreq/policy0/boost ] || echo "$1" > "$G"
+}
 case "${1:-status}" in
-    on) v=1 ;;
-    off) v=0 ;;
-    toggle) if [ "$(cat $F)" = 1 ]; then v=0; else v=1; fi ;;
-    apply) v=$(cat $S 2>/dev/null || echo 1) ;;
-    status) if [ "$(cat $F)" = 1 ]; then echo on; else echo off; fi; exit 0 ;;
-    *) echo "usage: cpu-boost on|off|toggle|status" >&2; exit 2 ;;
+    on)     set_all 1; rm -f "$RUN"; echo on ;;
+    off)    set_all 0; mkdir -p /run/cpu-boost; echo 0 > "$RUN"; echo off ;;
+    toggle) if [ "$(cur)" = 1 ]; then exec "$0" off; else exec "$0" on; fi ;;
+    apply)  if [ -f "$RUN" ] && [ "$(cur)" != 0 ]; then set_all 0; fi ;;
+    status) if [ "$(cur)" = 1 ]; then echo on; else echo off; fi ;;
+    *)      echo "usage: cpu-boost on|off|toggle|status" >&2; exit 2 ;;
 esac
-echo "$v" > $F
-if [ "$1" != apply ]; then mkdir -p /var/lib/cpu-boost; echo "$v" > $S; fi
-if [ "$v" = 1 ]; then echo on; else echo off; fi

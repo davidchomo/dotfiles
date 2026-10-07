@@ -1,0 +1,10 @@
+[Unit]
+Description=Re-apply manual CPU boost off (power-profiles-daemon re-enables it on profile change)
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=15s
+AccuracySec=2s
+
+[Install]
+WantedBy=timers.target
