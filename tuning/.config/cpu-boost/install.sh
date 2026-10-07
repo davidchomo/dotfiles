@@ -16,9 +16,13 @@ fi
 install -m 755 -o root -g root "$D/cpu-boost" /usr/local/bin/cpu-boost
 install -m 644 -o root -g root "$D/cpu-boost.service" /etc/systemd/system/cpu-boost.service
 install -m 644 -o root -g root "$D/cpu-boost.timer" /etc/systemd/system/cpu-boost.timer
-echo "${SUDO_USER:-$(logname 2>/dev/null || echo root)} ALL=(root) NOPASSWD: /usr/local/bin/cpu-boost" > /etc/sudoers.d/91-cpu-boost
-chmod 440 /etc/sudoers.d/91-cpu-boost
-visudo -c -q
+# sudoers rule is validated before it goes live, so a bad line can never break sudo
+U="${SUDO_USER:-$(logname 2>/dev/null || true)}"
+[ -n "$U" ] && [ "$U" != root ] || { echo "Run as: sudo sh $0  (from your normal user)"; exit 1; }
+T=$(mktemp)
+echo "$U ALL=(root) NOPASSWD: /usr/local/bin/cpu-boost" > "$T"
+visudo -c -q -f "$T" || { rm -f "$T"; echo "sudoers rule invalid, not installed"; exit 1; }
+install -m 440 -o root -g root "$T" /etc/sudoers.d/91-cpu-boost; rm -f "$T"
 rm -rf /var/lib/cpu-boost                       # old version kept a persistent state here
 systemctl daemon-reload
 systemctl disable cpu-boost.service 2>/dev/null || true   # old version ran it at boot
