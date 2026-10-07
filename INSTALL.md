@@ -25,6 +25,7 @@ cd ~/.cache/dots-hyprland
 
 # 3. Claude Code (voliteľné, pre AI panel) – potom zatvor a otvor terminál
 curl -fsSL https://claude.ai/install.sh | bash
+fish_add_path ~/.local/bin                          # claude je v ~/.local/bin (bash: export PATH=...)
 claude                                              # prihlásenie, potom /exit
 
 # 4. tieto dotfiles
