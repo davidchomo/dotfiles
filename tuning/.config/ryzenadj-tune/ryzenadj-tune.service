@@ -1,6 +1,8 @@
 [Unit]
 Description=CPU temperature cap 85 °C in Balanced/Quiet (ryzenadj)
-After=power-profiles-daemon.service
+After=power-profiles-daemon.service graphical.target
+# Emergency switch: add "noryzenadj" to the kernel command line (Limine: press E) to skip it.
+ConditionKernelCommandLine=!noryzenadj
 
 [Service]
 Type=oneshot

@@ -2,8 +2,10 @@
 Description=Re-apply ryzenadj-tune (firmware resets limits on profile/AC changes)
 
 [Timer]
-OnBootSec=20s
-OnUnitActiveSec=30s
+# v2 (2026-10-07): never touch the SMU while the GPU/greeter are starting – the first run
+# 20 s after boot coincided with the greeter failing to open the AMD GPU (4 failed boots).
+OnBootSec=3min
+OnUnitActiveSec=60s
 AccuracySec=5s
 
 [Install]
