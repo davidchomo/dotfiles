@@ -2,7 +2,7 @@
 
 Stow layout: each directory is a package mirroring `$HOME`. Currently linked by hand
 (whole directories / single files are symlinks into this repo). On a new system:
-`sudo pacman -S stow && cd ~/dotfiles && stow -t ~ hypr uwsm desk-widgets claude-bridge kitty fish gamemode bin`
+`sudo pacman -S stow && cd ~/dotfiles && stow -t ~ hypr uwsm desk-widgets claude-bridge kitty fish gamemode mangohud bin`
 
 | package | what |
 |---|---|
@@ -12,6 +12,7 @@ Stow layout: each directory is a package mirroring `$HOME`. Currently linked by 
 | `claude-bridge` | local OpenAI-compatible bridge end-4 sidebar → Claude Code (`claude -p`), user service; end-4 chat look patch (`end4-patch/apply.sh` after end-4 updates) |
 | `kitty`, `fish` | terminal (my originals, not end-4's) |
 | `gamemode` | gamemode switches power profile to performance while a game runs |
+| `mangohud` | in-game overlay (FPS, frametime, CPU/GPU temp+load, VRAM); Shift_R+F12 toggles, Shift_L+F2 logs to ~/benchmarks/mangohud |
 | `bin` | `nvidia-run` – run an app on the NVIDIA dGPU (PRIME offload, EGL allowed) |
 | `tuning` | `cpu-boost`, `ryzenadj-tune` – **NOT installed** (system-level; ryzenadj at early boot broke the greeter on 2026-10-07, see notes) |
 
