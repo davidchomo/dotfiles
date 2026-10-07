@@ -1,0 +1,6 @@
+[Unit]
+Description=Give all Steam games: nvidia-run gamemoderun mangohud %%command%%
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/steam-launch-options-after-exit

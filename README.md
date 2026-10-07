@@ -14,7 +14,7 @@ Stow layout: each directory is a package mirroring `$HOME`. Currently linked by 
 | `gamemode` | gamemode switches power profile to performance while a game runs |
 | `mangohud` | in-game overlay (FPS, frametime, CPU/GPU temp+load, VRAM); Shift_R+F12 toggles, Shift_L+F2 logs to ~/benchmarks/mangohud |
 | `brave` | `brave-flags.conf` – VA-API hardware video decode on the AMD iGPU (Wayland) |
-| `steam` | `steam` launcher + `steam-launch-options`: before Steam starts, every installed game gets `nvidia-run gamemoderun mangohud %command%` (Steam has no global launch options); desktop entry override |
+| `steam` | `steam` launcher + `steam-launch-options`: after Steam exits (systemd path unit watching localconfig.vdf) and before Steam starts, every installed game gets `nvidia-run gamemoderun mangohud %command%` (Steam has no global launch options); desktop entry override |
 | `bin` | `nvidia-run` – run an app on the NVIDIA dGPU (PRIME offload, EGL allowed) |
 | `tuning` | `cpu-boost`, `ryzenadj-tune` – **NOT installed** (system-level; ryzenadj at early boot broke the greeter on 2026-10-07, see notes) |
 

@@ -1,0 +1,8 @@
+[Unit]
+Description=Re-apply Steam launch options for all games after Steam saves its config
+
+[Path]
+PathChanged=%h/.local/share/Steam/userdata/1386703572/config/localconfig.vdf
+
+[Install]
+WantedBy=default.target

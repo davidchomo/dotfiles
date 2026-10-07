@@ -1,0 +1,8 @@
+#!/bin/sh
+# Triggered by steam-launch-options.path whenever Steam rewrites localconfig.vdf (it does so on
+# exit). Wait until Steam has really quit, then add the launch options to all games. If Steam is
+# still running after 2 minutes the write was a runtime one – do nothing, the exit will trigger again.
+for i in $(seq 1 60); do
+    pgrep -x steam >/dev/null 2>&1 || exec "$HOME/.local/bin/steam-launch-options" --quiet
+    sleep 2
+done
