@@ -17,5 +17,5 @@ hl.bind("SUPER + F1", hl.dsp.exec_cmd("~/.config/hypr/custom/scripts/helper.sh")
     { description = "Shell: Toggle shortcut side panel" })
 
 -- CPU turbo boost on/off (/usr/local/bin/cpu-boost, passwordless via /etc/sudoers.d/91-cpu-boost)
-hl.bind("SUPER + ALT + B", hl.dsp.exec_cmd("notify-send -a 'CPU boost' -i cpu \"Boost: $(sudo -n /usr/local/bin/cpu-boost toggle)\""),
+hl.bind("SUPER + ALT + B", hl.dsp.exec_cmd("~/.config/hypr/custom/scripts/boost-toggle.sh"),
     { description = "System: Toggle CPU boost" })
