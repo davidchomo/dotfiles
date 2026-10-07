@@ -112,6 +112,7 @@ else
 fi
 
 # Claude Code sidebar bridge (optional)
+export PATH="$HOME/.local/bin:$PATH"   # official Claude Code installer puts it here
 if command -v claude >/dev/null 2>&1; then
     [ -s "$HOME/.config/claude-bridge/token" ] || (umask 077; python3 -I -c 'import secrets; print(secrets.token_urlsafe(32))' > "$HOME/.config/claude-bridge/token")
     systemctl --user enable --now claude-bridge.service >/dev/null 2>&1
