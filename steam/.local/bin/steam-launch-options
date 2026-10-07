@@ -1,7 +1,7 @@
 #!/home/debury/.local/share/steam-launch-options/venv/bin/python -I
 """Give every installed Steam game the same launch options (Steam has no global setting).
 
-  nvidia-run gamemoderun mangohud %command%
+  $HOME/.local/bin/nvidia-run gamemoderun mangohud %command%
 
 Run while Steam is CLOSED (Steam rewrites localconfig.vdf on exit); ~/.local/bin/steam calls
 this automatically before starting Steam, so newly installed games get it on the next start.
@@ -16,7 +16,8 @@ import sys
 
 import vdf
 
-OPTIONS = "nvidia-run gamemoderun mangohud %command%"
+# full path: Steam's PATH does not include ~/.local/bin ("nvidia-run: command not found")
+OPTIONS = "$HOME/.local/bin/nvidia-run gamemoderun mangohud %command%"
 STEAM = pathlib.Path.home() / ".local/share/Steam"
 NOT_GAMES = re.compile(r"Proton|Steam Linux Runtime|Steamworks|Steam Runtime|SteamVR", re.I)
 
