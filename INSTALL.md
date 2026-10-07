@@ -64,7 +64,7 @@ git clone https://github.com/davidchomo/dotfiles ~/dotfiles
 cd ~/dotfiles
 ./install.sh --check      # iba kontrola, nič nemení
 ./install.sh              # nainštaluje (existujúce súbory zálohuje ako *.bak-<dátum>)
-./install.sh kitty fish   # + aj môj terminál a fish (voliteľné)
+./install.sh kitty fish fastfetch   # + aj môj terminál, fish a logo (voliteľné)
 ```
 Skript sa dá spustiť opakovane. Sám zistí:
 - **hybridný notebook AMD + NVIDIA** → Hyprland pobeží len na AMD, NVIDIA v nečinnosti spí,

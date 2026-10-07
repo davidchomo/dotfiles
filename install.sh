@@ -9,7 +9,7 @@ set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 DOT="$PWD"
 DEFAULT_PKGS=(hypr uwsm desk-widgets claude-bridge gamemode mangohud brave steam bin tuning)
-OPTIONAL_PKGS=(kitty fish)
+OPTIONAL_PKGS=(kitty fish fastfetch)
 
 c_ok=$'\e[32m'; c_warn=$'\e[33m'; c_err=$'\e[31m'; c_off=$'\e[0m'
 ok()   { echo "${c_ok}✔${c_off} $*"; }
@@ -62,6 +62,7 @@ declare -A LINKS=(
     [bin]=".local/bin/nvidia-run"
     [tuning]=".config/cpu-boost .config/ryzenadj-tune"
     [kitty]=".config/kitty"
+    [fastfetch]=".config/fastfetch"
     [fish]=".config/fish/config.fish"
 )
 for pkg in "${pkgs[@]}"; do
