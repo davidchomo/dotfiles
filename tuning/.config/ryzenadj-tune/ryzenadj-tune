@@ -1,10 +1,15 @@
 #!/bin/sh
-# Lower the CPU temperature cap to 85 °C (firmware default 93 °C) in the Balanced and Quiet
-# platform profiles; leave Performance (games, via gamemode) untouched. Firmware resets SMU
-# limits on every profile / AC-DC switch, so ryzenadj-tune.timer re-applies this every 30 s.
-# Curve Optimizer is rejected by this G14's SMU, so the temperature cap is the tuning we use.
+# CPU tuning per platform profile (Curve Optimizer is rejected by this G14's SMU, so we use
+# limits). Firmware resets SMU limits on every profile / AC-DC switch, so
+# ryzenadj-tune.timer re-applies this every 60 s (first run 3 min after boot – see the timer).
+#   balanced    : sustained 35 W (firmware 45 W), short bursts 45 W (firmware 65 W), cap 85 °C
+#   quiet       : firmware power limits, cap 85 °C
+#   performance : untouched (games via gamemode get full power, firmware cap 95 °C)
 TCTL=85
 case "$(cat /sys/firmware/acpi/platform_profile 2>/dev/null)" in
     performance) exit 0 ;;
+    balanced)
+        exec /usr/bin/ryzenadj --stapm-limit=35000 --slow-limit=35000 --fast-limit=45000 \
+            --tctl-temp=$TCTL >/dev/null 2>&1 ;;
     *) exec /usr/bin/ryzenadj --tctl-temp=$TCTL >/dev/null 2>&1 ;;
 esac
