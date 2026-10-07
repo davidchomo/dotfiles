@@ -1,0 +1,19 @@
+#!/bin/sh
+# cpu-boost on|off|toggle|status|apply — CPU turbo boost switch (Ryzen, amd-pstate-epp).
+# The choice is remembered in /var/lib/cpu-boost/state and re-applied at boot by cpu-boost.service.
+# Installed as /usr/local/bin/cpu-boost; the user may run it via sudo without password
+# (/etc/sudoers.d/91-cpu-boost) so a keybind can toggle it.
+set -e
+F=/sys/devices/system/cpu/cpufreq/boost
+S=/var/lib/cpu-boost/state
+case "${1:-status}" in
+    on) v=1 ;;
+    off) v=0 ;;
+    toggle) if [ "$(cat $F)" = 1 ]; then v=0; else v=1; fi ;;
+    apply) v=$(cat $S 2>/dev/null || echo 1) ;;
+    status) if [ "$(cat $F)" = 1 ]; then echo on; else echo off; fi; exit 0 ;;
+    *) echo "usage: cpu-boost on|off|toggle|status" >&2; exit 2 ;;
+esac
+echo "$v" > $F
+if [ "$1" != apply ]; then mkdir -p /var/lib/cpu-boost; echo "$v" > $S; fi
+if [ "$v" = 1 ]; then echo on; else echo off; fi

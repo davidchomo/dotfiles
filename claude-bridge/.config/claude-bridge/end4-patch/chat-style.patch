@@ -1,0 +1,198 @@
+--- a/modules/ii/sidebarLeft/AiChat.qml
++++ b/modules/ii/sidebarLeft/AiChat.qml
+@@ -356,7 +356,7 @@
+                 id: messageListView
+                 z: 0
+                 anchors.fill: parent
+-                spacing: 10
++                spacing: 18 // [desk-rice patch] more air between messages
+                 popin: false
+                 topMargin: statusBg.implicitHeight + statusBg.anchors.topMargin * 2
+ 
+--- a/modules/ii/sidebarLeft/aiChat/AiMessage.qml
++++ b/modules/ii/sidebarLeft/aiChat/AiMessage.qml
+@@ -13,10 +13,16 @@
+     property var messageData
+     property var messageInputField
+ 
+-    property real messagePadding: 7
+-    property real contentSpacing: 3
++    // [desk-rice patch] chat-style layout: user = tonal bubble on the right, assistant = plain
++    // full-width text with a small label, message controls only on hover.
++    readonly property bool isUser: messageData?.role == 'user'
++    readonly property bool isAssistant: messageData?.role == 'assistant'
++    readonly property bool showControls: hover.hovered || root.editing
+ 
+-    property bool enableMouseSelection: false
++    property real messagePadding: isUser ? 12 : 4
++    property real contentSpacing: 6
++
++    property bool enableMouseSelection: true // [desk-rice patch] select + Ctrl+C text in chat
+     property bool renderMarkdown: true
+     property bool editing: false
+ 
+@@ -24,10 +30,15 @@
+ 
+     anchors.left: parent?.left
+     anchors.right: parent?.right
++    anchors.leftMargin: isUser ? (parent?.width ?? 0) * 0.14 : 0
+     implicitHeight: columnLayout.implicitHeight + root.messagePadding * 2
+ 
+-    radius: Appearance.rounding.normal
+-    color: Appearance.colors.colLayer1
++    radius: Appearance.rounding.large
++    color: isUser ? Appearance.colors.colSecondaryContainer
++         : isAssistant ? "transparent"
++         : Appearance.colors.colLayer1
++
++    HoverHandler { id: hover }
+ 
+     function saveMessage() {
+         if (!root.editing) return;
+@@ -78,34 +89,39 @@
+         spacing: root.contentSpacing
+ 
+         Rectangle {
++            // [desk-rice patch] quiet header: no filled bar; for user bubbles it collapses to the
++            // hover controls only (name/icon hidden)
+             Layout.fillWidth: true
+-            implicitWidth: headerRowLayout.implicitWidth + 4 * 2
+-            implicitHeight: headerRowLayout.implicitHeight + 4 * 2
+-            color: Appearance.colors.colSecondaryContainer
+-            radius: Appearance.rounding.small
+-        
++            implicitWidth: headerRowLayout.implicitWidth
++            implicitHeight: root.isUser ? (root.showControls ? headerRowLayout.implicitHeight : 0) : headerRowLayout.implicitHeight
++            visible: implicitHeight > 0
++            clip: true
++            color: "transparent"
++            Behavior on implicitHeight { NumberAnimation { duration: 120 } }
++
+             RowLayout { // Header
+                 id: headerRowLayout
+                 anchors {
+                     fill: parent
+-                    margins: 4
++                    margins: 0
+                 }
+                 spacing: 18
+ 
+                 Item { // Name
+                     id: nameWrapper
+-                    implicitHeight: Math.max(nameRowLayout.implicitHeight + 5 * 2, 30)
++                    implicitHeight: Math.max(nameRowLayout.implicitHeight + 2 * 2, 28)
+                     Layout.fillWidth: true
+                     Layout.alignment: Qt.AlignVCenter
++                    opacity: root.isUser ? 0 : 1
+ 
+                     RowLayout {
+                         id: nameRowLayout
+                         anchors.verticalCenter: parent.verticalCenter
+                         anchors.left: parent.left
+                         anchors.right: parent.right
+-                        anchors.leftMargin: 10
+-                        anchors.rightMargin: 10
+-                        spacing: 12
++                        anchors.leftMargin: 2
++                        anchors.rightMargin: 2
++                        spacing: 8
+ 
+                         Item {
+                             Layout.alignment: Qt.AlignVCenter
+@@ -117,21 +133,21 @@
+                                 id: modelIcon
+                                 anchors.centerIn: parent
+                                 visible: messageData?.role == 'assistant' && Ai.models[messageData?.model].icon
+-                                width: Appearance.font.pixelSize.large
+-                                height: Appearance.font.pixelSize.large
++                                width: Appearance.font.pixelSize.normal
++                                height: Appearance.font.pixelSize.normal
+                                 source: messageData?.role == 'assistant' ? Ai.models[messageData?.model].icon :
+                                     messageData?.role == 'user' ? 'linux-symbolic' : 'desktop-symbolic'
+ 
+                                 colorize: true
+-                                color: Appearance.m3colors.m3onSecondaryContainer
++                                color: Appearance.colors.colPrimary
+                             }
+ 
+                             MaterialSymbol {
+                                 id: roleIcon
+                                 anchors.centerIn: parent
+                                 visible: !modelIcon.visible
+-                                iconSize: Appearance.font.pixelSize.larger
+-                                color: Appearance.m3colors.m3onSecondaryContainer
++                                iconSize: Appearance.font.pixelSize.normal
++                                color: Appearance.colors.colPrimary
+                                 text: messageData?.role == 'user' ? 'person' : 
+                                     messageData?.role == 'interface' ? 'settings' : 
+                                     messageData?.role == 'assistant' ? 'neurology' : 
+@@ -144,8 +160,9 @@
+                             Layout.alignment: Qt.AlignVCenter
+                             Layout.fillWidth: true
+                             elide: Text.ElideRight
+-                            font.pixelSize: Appearance.font.pixelSize.normal
+-                            color: Appearance.m3colors.m3onSecondaryContainer
++                            font.pixelSize: Appearance.font.pixelSize.small
++                            font.weight: Font.Medium
++                            color: Appearance.colors.colSubtext
+                             text: messageData?.role == 'assistant' ? Ai.models[messageData?.model].name :
+                                 (messageData?.role == 'user' && SystemInfo.username) ? SystemInfo.username :
+                                 Translation.tr("Interface")
+@@ -176,6 +193,9 @@
+ 
+                 ButtonGroup {
+                     spacing: 5
++                    opacity: root.showControls ? 1 : 0
++                    enabled: root.showControls
++                    Behavior on opacity { NumberAnimation { duration: 150 } }
+ 
+                     AiMessageControlButton {
+                         id: regenButton
+--- a/modules/ii/sidebarLeft/aiChat/MessageThinkBlock.qml
++++ b/modules/ii/sidebarLeft/aiChat/MessageThinkBlock.qml
+@@ -91,7 +91,7 @@
+                     id: thinkBlockLanguage
+                     Layout.fillWidth: false
+                     Layout.alignment: Qt.AlignLeft
+-                    text: root.completed ? Translation.tr("Thought") : (Translation.tr("Thinking") + ".".repeat(Math.random() * 4))
++                    text: root.completed ? "Postup" : ("Pracujem" + ".".repeat(Math.random() * 4)) // [desk-rice patch]
+                 }
+                 Item { Layout.fillWidth: true }
+                 RippleButton { // Expand button
+--- a/modules/ii/sidebarLeft/aiChat/MessageTextBlock.qml
++++ b/modules/ii/sidebarLeft/aiChat/MessageTextBlock.qml
+@@ -156,8 +156,8 @@
+             font.family: Appearance.font.family.reading
+             font.hintingPreference: Font.PreferNoHinting // Prevent weird bold text
+             font.pixelSize: Appearance.font.pixelSize.small
+-            selectedTextColor: Appearance.m3colors.m3onSecondaryContainer
+-            selectionColor: Appearance.colors.colSecondaryContainer
++            selectedTextColor: Appearance.m3colors.m3onPrimary // [desk-rice patch] visible on user bubbles too
++            selectionColor: Appearance.colors.colPrimary
+             wrapMode: TextEdit.Wrap
+             color: root.messageData?.thinking ? Appearance.colors.colSubtext : Appearance.colors.colOnLayer1
+             textFormat: renderMarkdown ? TextEdit.MarkdownText : TextEdit.PlainText
+--- a/modules/ii/sidebarLeft/aiChat/MessageCodeBlock.qml
++++ b/modules/ii/sidebarLeft/aiChat/MessageCodeBlock.qml
+@@ -216,8 +216,8 @@
+                         font.family: Appearance.font.family.monospace
+                         font.hintingPreference: Font.PreferNoHinting // Prevent weird bold text
+                         font.pixelSize: Appearance.font.pixelSize.small
+-                        selectedTextColor: Appearance.m3colors.m3onSecondaryContainer
+-                        selectionColor: Appearance.colors.colSecondaryContainer
++                        selectedTextColor: Appearance.m3colors.m3onPrimary // [desk-rice patch]
++                        selectionColor: Appearance.colors.colPrimary
+                         // wrapMode: TextEdit.Wrap
+                         color: messageData.thinking ? Appearance.colors.colSubtext : Appearance.colors.colOnLayer1
+ 
+--- a/modules/ii/sidebarLeft/SidebarLeft.qml
++++ b/modules/ii/sidebarLeft/SidebarLeft.qml
+@@ -89,7 +89,7 @@
+             visible: GlobalStates.sidebarLeftOpen
+             
+             property bool extend: false
+-            property real sidebarWidth: panelWindow.extend ? Appearance.sizes.sidebarWidthExtended : Appearance.sizes.sidebarWidth
++            property real sidebarWidth: panelWindow.extend ? Appearance.sizes.sidebarWidthExtended : 620 // [desk-rice patch] wider AI chat (default 460)
+             property var contentParent: sidebarLeftBackground
+ 
+             function hide() {

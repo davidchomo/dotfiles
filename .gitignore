@@ -1,0 +1,6 @@
+# secrets – never commit
+desk-widgets/.config/desk-widgets/secrets/
+claude-bridge/.config/claude-bridge/token
+# caches
+__pycache__/
+*.pyc

@@ -1,0 +1,12 @@
+# Hyprland-only env (UWSM). GPU: AMD iGPU only, so the NVIDIA dGPU can runtime-suspend.
+# USB-C (DP-1, NVIDIA) won't work in Hyprland; to re-enable add ":$HOME/.config/hypr/gpu-nvidia".
+# Symlinks are used because /dev/dri/by-path names contain ':' (the AQ_DRM_DEVICES separator):
+#   gpu-amd    -> /dev/dri/by-path/pci-0000:04:00.0-card  (AMD,    eDP-1 + HDMI-A-1)
+#   gpu-nvidia -> /dev/dri/by-path/pci-0000:01:00.0-card  (NVIDIA, DP-1 / USB-C)
+export AQ_DRM_DEVICES="$HOME/.config/hypr/gpu-amd"
+
+# Load only Mesa's EGL in the session: otherwise glvnd also loads libEGL_nvidia into Hyprland
+# (and every app), which opens /dev/nvidia0 and keeps the dGPU from runtime-suspending.
+# Games via Steam/Proton use Vulkan and are unaffected; ~/.local/bin/nvidia-run lifts this for
+# the rare EGL app that should run on NVIDIA.
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json

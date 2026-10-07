@@ -1,0 +1,5 @@
+#!/bin/sh
+# Run a program on the NVIDIA dGPU (PRIME render offload) with NVIDIA EGL allowed again.
+# The desktop session restricts EGL to Mesa (see ~/.config/uwsm/env-hyprland) so the dGPU can sleep.
+unset __EGL_VENDOR_LIBRARY_FILENAMES
+exec prime-run "$@"

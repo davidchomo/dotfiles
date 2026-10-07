@@ -1,0 +1,50 @@
+  SKRATKY          Super+F1 zavrie
+
+  ── Základ ─────────────────────
+  Super+Enter      terminál (kitty)
+  Super+Q          zavrieť okno
+  Super+/          všetky skratky
+  Super+L          zamknúť
+  Alt+Shift        sk ⇄ us klávesnica
+
+  ── Aplikácie ──────────────────
+  Super            hľadať appku / súbor
+  Super+W          prehliadač (Brave)
+  Super+X          textový editor
+  Super+E          súbory (Dolphin)
+  Super+C          editor kódu
+  Super+I          nastavenia
+  Ctrl+Super+V     hlasitosť (mixér)
+  Ctrl+Shift+Esc   správca úloh
+  Super+Alt+B      CPU boost zap/vyp
+
+  ── Plochy ─────────────────────
+  Super+1…0        prepnúť na plochu
+  Super+Alt+1…0    poslať okno na plochu
+  Super+Ctrl+←/→   plocha vľavo/vpravo
+  Super+Tab        prehľad všetkých plôch
+  4 prsty ←/→      prepnúť plochu
+  4 prsty ↑/↓      prehľad
+
+  ── „Minimalizovať“ ────────────
+  Super+Alt+S      schovať okno
+  Super+S          ukázať schované
+
+  ── Okná ───────────────────────
+  Super+←↑→↓       fokus okna
+  Super+Shift+←↑→↓ presunúť okno
+  Super+F          fullscreen
+  Super+D          maximalizovať
+  Super+Alt+Space  plávajúce ⇄ dlaždica
+  Super+P          pripnúť navrch
+  Super+ľavé myš   ťahať okno
+  Super+pravé myš  zmeniť veľkosť
+
+  ── Nástroje ───────────────────
+  Super+Shift+S    výrez obrazovky
+  Shift+Print      oblasť → clipboard
+  Print            celý monitor → clipboard
+  Super+V          história clipboardu
+  Ctrl+Super+T     výber tapety
+  Super+A          Claude Code chat
+  Super+N          pravý panel (Wi-Fi, BT…)
