@@ -18,7 +18,8 @@ case "$1" in
             [ -f "$boost_state" ] || echo "$prev" > "$boost_state"
             sudo -n /usr/local/bin/cpu-boost on >/dev/null && msg="$msg + CPU boost"
         fi
-        notify-send -a GameMode -i applications-games "GameMode" "$msg" ;;
+        # no notification here: it would pop up over the game as it starts
+        : "$msg" ;;
     end)
         powerprofilesctl set "$(cat "$state" 2>/dev/null || echo balanced)"
         rm -f "$state"

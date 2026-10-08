@@ -128,6 +128,9 @@ else
     warn "Claude Code CLI not found – AI sidebar bridge left off"
 fi
 
+# end-4 tweaks without a setting of their own (no popups over full-screen games…)
+"$DOT/end4-tweaks/apply.sh" | sed 's/^/  end-4: /' || warn "end-4 tweaks not applied"
+
 command -v hyprctl >/dev/null && hyprctl reload >/dev/null 2>&1 || true
 
 cat <<EOF
