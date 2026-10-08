@@ -7,3 +7,4 @@ __pycache__/
 # machine-specific Hyprland settings (monitors, mice) – see local.lua.example
 hypr/.config/hypr/custom/local.lua
 hypr/.config/hypr/custom/monitors.lua
+hypr/.config/hypr/custom/local.lua.bak-*

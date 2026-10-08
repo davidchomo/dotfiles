@@ -1,7 +1,0 @@
--- Machine-specific Hyprland settings (NOT in git – see local.lua.example). This machine:
--- ASUS G14 GA401QC, laptop panel eDP-1 + Samsung 27" on HDMI-A-1, Logitech G102 mouse.
-hl.monitor({ output = "eDP-1",    mode = "2560x1440@120", position = "0x0",    scale = 1.6 })
-hl.monitor({ output = "HDMI-A-1", mode = "2560x1440@144", position = "1600x0", scale = 1 })
-
--- External mouse without acceleration (touchpad keeps libinput's adaptive profile)
-hl.device({ name = "logitech-g102-lightsync-gaming-mouse", accel_profile = "flat" })
