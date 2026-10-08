@@ -23,3 +23,7 @@ hl.bind("SUPER + ALT + B", hl.dsp.exec_cmd("~/.config/hypr/custom/scripts/boost-
 -- Settings app for the rice add-ons (widgets, Claude Code sidebar, games, system)
 hl.bind("CTRL + SUPER + I", hl.dsp.exec_cmd("qs -p ~/.config/desk-widgets/settings.qml"),
     { description = "App: Rice settings (widgets, Claude Code, games)" })
+
+-- Coucou notch: open the Claude Code chat (its own Ctrl+Alt+Space cannot grab keys on Wayland)
+hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("coucou --shortcut openChat"),
+    { description = "App: Coucou notch chat (Claude Code)" })

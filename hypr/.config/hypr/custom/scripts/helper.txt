@@ -15,6 +15,7 @@
   Super+C          editor kódu
   Super+I          nastavenia end-4
   Ctrl+Super+I     nastavenia rice
+  Super+Space      notch – chat s Claude Code
   Ctrl+Super+V     hlasitosť (mixér)
   Ctrl+Shift+Esc   správca úloh
   Super+Alt+B      CPU boost zap/vyp
