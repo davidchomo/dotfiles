@@ -27,3 +27,9 @@ hl.bind("CTRL + SUPER + I", hl.dsp.exec_cmd("qs -p ~/.config/desk-widgets/settin
 -- Coucou notch: open the Claude Code chat (its own Ctrl+Alt+Space cannot grab keys on Wayland)
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("coucou --shortcut openChat"),
     { description = "App: Coucou notch chat (Claude Code)" })
+
+-- end-4's left sidebar (AI, anime, translator) is not used: the notch has the chat.
+-- Its keys are taken off so it cannot be opened by accident.
+for _, keys in ipairs({ "SUPER + A", "SUPER + ALT + A", "SUPER + B", "SUPER + O" }) do
+    if hl.unbind then hl.unbind(keys) end
+end
