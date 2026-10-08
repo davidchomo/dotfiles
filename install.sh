@@ -8,7 +8,7 @@
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"
 DOT="$PWD"
-DEFAULT_PKGS=(hypr uwsm desk-widgets claude-bridge gamemode mangohud brave steam bin tuning)
+DEFAULT_PKGS=(hypr uwsm desk-widgets claude-bridge gamemode mangohud brave steam bin tuning spotify)
 OPTIONAL_PKGS=(kitty fish fastfetch)
 
 c_ok=$'\e[32m'; c_warn=$'\e[33m'; c_err=$'\e[31m'; c_off=$'\e[0m'
@@ -58,6 +58,7 @@ declare -A LINKS=(
     [gamemode]=".config/gamemode.ini .config/gamemode"
     [mangohud]=".config/MangoHud"
     [brave]=".config/brave-flags.conf"
+    [spotify]=".config/spotify-launcher.conf"
     [steam]=".local/bin/steam .local/bin/steam-launch-options .local/bin/steam-launch-options-after-exit .local/share/steam-launch-options/steam_launch_options.py .config/systemd/user/steam-launch-options@.path .config/systemd/user/steam-launch-options@.service"
     [bin]=".local/bin/nvidia-run"
     [tuning]=".config/cpu-boost .config/ryzenadj-tune"
