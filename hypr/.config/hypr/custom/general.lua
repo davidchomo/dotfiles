@@ -14,3 +14,7 @@ hl.config({
 if is_file_exists(HOME .. "/.config/hypr/custom/local.lua") then
     require("custom.local")
 end
+-- Monitor choices from the rice settings app (Ctrl+Super+I → Monitory), after local.lua so they win
+if is_file_exists(HOME .. "/.config/hypr/custom/monitors.lua") then
+    require("custom.monitors")
+end

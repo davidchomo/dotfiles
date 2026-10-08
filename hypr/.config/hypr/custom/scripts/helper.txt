@@ -16,7 +16,7 @@
   Super+I          nastavenia end-4
   Ctrl+Super+I     nastavenia rice
   Super+Space      notch – chat s Claude Code
-  Super+Shift+Space notch veľký / normálny
+  Super+Shift+Space notch – vysoký / normálny chat
   Ctrl+Super+V     hlasitosť (mixér)
   Ctrl+Shift+Esc   správca úloh
   Super+Alt+B      CPU boost zap/vyp

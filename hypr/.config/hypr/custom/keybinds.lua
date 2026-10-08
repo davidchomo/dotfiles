@@ -27,8 +27,8 @@ hl.bind("CTRL + SUPER + I", hl.dsp.exec_cmd("qs -p ~/.config/desk-widgets/settin
 -- Coucou notch: open the Claude Code chat (its own Ctrl+Alt+Space cannot grab keys on Wayland)
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("coucou --shortcut openChat"),
     { description = "App: Coucou notch chat (Claude Code)" })
-hl.bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("coucou --zoom"),
-    { description = "App: Coucou notch – big / normal" })
+hl.bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("coucou --tall"),
+    { description = "App: Coucou notch – tall / normal chat" })
 
 -- end-4's left sidebar (AI, anime, translator) is not used: the notch has the chat.
 -- Its keys are taken off so it cannot be opened by accident.

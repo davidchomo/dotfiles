@@ -63,10 +63,68 @@ ApplicationWindow {
         onRunningChanged: if (!running) icalStatus.text = "Uložené ✓ (kalendár sa obnoví do 10 min alebo po kliknutí na ⟳ vo widgete)"
     }
 
+    // ------------------------------------------------------------------ monitors
+    // Live state from hyprctl; the choices in ~/.config/rice/monitors.json. Saving writes
+    // ~/.config/hypr/custom/monitors.lua (loaded after local.lua, so it wins) and reloads.
+    property var mons: []
+    property var monPrefs: ({})
+    Process {
+        id: monProc
+        command: ["sh", "-c", "hyprctl monitors -j; printf '\\n---\\n'; cat \"$HOME/.config/rice/monitors.json\" 2>/dev/null || echo '{}'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const parts = text.split("\n---\n");
+                try { app.mons = JSON.parse(parts[0]); } catch (e) {}
+                try { app.monPrefs = JSON.parse(parts[1] || "{}"); } catch (e) { app.monPrefs = {}; }
+            }
+        }
+    }
+    Timer { interval: 10; running: true; onTriggered: monProc.running = true }
+    Process {
+        id: monWriter
+        stdinEnabled: true
+        command: ["sh", "-c", `IFS= read -r json; mkdir -p "$HOME/.config/rice"
+            printf '%s\n' "$json" > "$HOME/.config/rice/monitors.json"
+            f="$HOME/.config/hypr/custom/monitors.lua"; cat > "$f.new" && mv "$f.new" "$f"
+            hyprctl reload >/dev/null`]
+        onRunningChanged: if (!running) monRefresh.restart()
+    }
+    Timer { id: monRefresh; interval: 1200; onTriggered: monProc.running = true }
+
+    function monPref(m) {
+        const p = app.monPrefs[m.name] ?? {};
+        return {
+            hz: p.hz ?? Math.round(m.refreshRate),
+            vrr: p.vrr ?? 0,
+            cm: p.cm ?? (m.colorManagementPreset || "srgb"),
+        };
+    }
+    function monHzOptions(m) {
+        const res = m.width + "x" + m.height + "@";
+        const hz = m.availableModes.filter(x => x.startsWith(res)).map(x => Math.round(parseFloat(x.slice(res.length))));
+        return [...new Set(hz)].sort((a, b) => b - a);
+    }
+    function setMon(name, key, value) {
+        const prefs = JSON.parse(JSON.stringify(app.monPrefs));
+        prefs[name] = Object.assign({}, prefs[name] ?? {}, { [key]: value });
+        app.monPrefs = prefs;
+        const num = v => String(Math.round(v * 100) / 100);
+        const lines = ["-- Written by the rice settings app (Ctrl+Super+I → Monitory); loaded after local.lua.",
+                       "-- Delete this file to go back to local.lua's monitor settings."];
+        for (const m of app.mons) {
+            const p = Object.assign(monPref(m), prefs[m.name] ?? {});
+            lines.push(`hl.monitor({ output = "${m.name}", mode = "${m.width}x${m.height}@${p.hz}", position = "${m.x}x${m.y}", scale = ${num(m.scale)}, vrr = ${p.vrr}, cm = "${p.cm}" })`);
+        }
+        monWriter.stdinEnabled = true;
+        monWriter.running = true;
+        monWriter.write(JSON.stringify(prefs) + "\n" + lines.join("\n") + "\n");
+        monWriter.stdinEnabled = false;
+    }
+
     // MangoHud fps_limit list: the chosen value first, Shift_L+F1 cycles through the rest
     function setFpsLimit(v) {
         gm.fpsLimit = v;
-        const order = { "60": "60,120,0", "120": "120,60,0", "144": "144,60,0", "0": "0,60,120" }[v];
+        const order = { "60": "60,120,0", "120": "120,60,0", "141": "141,60,0", "144": "144,60,0", "0": "0,60,120" }[v];
         run(["sed", "--follow-symlinks", "-i", `s/^fps_limit=.*/fps_limit=${order}/`, home + "/.config/MangoHud/MangoHud.conf"]);
     }
 
@@ -148,6 +206,7 @@ ApplicationWindow {
                         { name: "Widgety", icon: "widgets" },
                         { name: "Claude Code", icon: "smart_toy" },
                         { name: "Hry", icon: "sports_esports" },
+                        { name: "Monitory", icon: "desktop_windows" },
                         { name: "Systém", icon: "memory" },
                     ]
                     delegate: ItemDelegate {
@@ -297,8 +356,8 @@ ApplicationWindow {
                     hint: "V hre ľavý Shift+F1 prepína medzi limitmi"
                     ComboBox {
                         implicitWidth: 220
-                        readonly property var values: ["60", "120", "144", "0"]
-                        model: ["60 FPS", "120 FPS", "144 FPS", "Bez limitu"]
+                        readonly property var values: ["60", "120", "141", "144", "0"]
+                        model: ["60 FPS", "120 FPS", "141 FPS (FreeSync)", "144 FPS", "Bez limitu"]
                         currentIndex: Math.max(0, values.indexOf(app.gm.fpsLimit))
                         onActivated: app.setFpsLimit(values[currentIndex])
                     }
@@ -313,6 +372,57 @@ ApplicationWindow {
                     hint: app.sys.boost === "none" ? "Vyžaduje cpu-boost (sudo sh ~/.config/cpu-boost/install.sh)"
                                                    : "Gamemode zapne boost pri štarte hry a potom ho vráti"
                     Switch { enabled: app.sys.boost !== "none"; checked: app.gm.boostInGames; onToggled: app.gm.boostInGames = checked }
+                }
+            }
+
+            // ============================================================ Monitory
+            Page {
+                SectionTitle { text: "Monitory" }
+                Hint { text: "Zmena sa prejaví hneď (Hyprland sa znova načíta). Uložené v ~/.config/hypr/custom/monitors.lua – zmaž ho, ak chceš späť pôvodné nastavenie." }
+                Repeater {
+                    model: app.mons
+                    delegate: ColumnLayout {
+                        id: monBox
+                        required property var modelData
+                        readonly property var m: modelData
+                        readonly property var p: app.monPref(m)
+                        Layout.fillWidth: true
+                        spacing: 6
+                        SectionTitle { text: monBox.m.name + "  ·  " + monBox.m.model + "  (" + monBox.m.width + "×" + monBox.m.height + ")" }
+                        SettingRow {
+                            label: "Obnovovacia frekvencia"
+                            hint: "Teraz " + Math.round(monBox.m.refreshRate) + " Hz"
+                            ComboBox {
+                                implicitWidth: 220
+                                readonly property var values: app.monHzOptions(monBox.m)
+                                model: values.map(v => v + " Hz")
+                                currentIndex: Math.max(0, values.indexOf(monBox.p.hz))
+                                onActivated: i => app.setMon(monBox.m.name, "hz", values[i])
+                            }
+                        }
+                        SettingRow {
+                            label: "FreeSync / VRR"
+                            hint: "Plynulejšie hry bez trhania; „Iba hry“ zapína VRR len pri okne na celú obrazovku"
+                            ComboBox {
+                                implicitWidth: 220
+                                readonly property var values: [0, 2, 1]
+                                model: ["Vypnutý", "Iba hry (celá obrazovka)", "Vždy"]
+                                currentIndex: Math.max(0, values.indexOf(monBox.p.vrr))
+                                onActivated: i => app.setMon(monBox.m.name, "vrr", values[i])
+                            }
+                        }
+                        SettingRow {
+                            label: "Farby"
+                            hint: "Presýtené farby na monitore so širokým gamutom opraví „Podľa monitora“. HDR iba ak ho monitor naozaj má."
+                            ComboBox {
+                                implicitWidth: 220
+                                readonly property var values: ["srgb", "edid", "wide", "hdr"]
+                                model: ["sRGB (predvolené)", "Podľa monitora (EDID)", "Široký gamut", "HDR"]
+                                currentIndex: Math.max(0, values.indexOf(monBox.p.cm))
+                                onActivated: i => app.setMon(monBox.m.name, "cm", values[i])
+                            }
+                        }
+                    }
                 }
             }
 
